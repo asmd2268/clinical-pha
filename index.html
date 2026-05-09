@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة الصيدلاني الإكلينيكي / Clinical Pharmacist Platform v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f3ef;--surface:#ffffff;--surface2:#eeecea;--surface3:#e5e3de;
+  --border:#dedad2;--border2:#c8c4ba;
+  --text:#1c1b18;--text2:#5c5a55;--text3:#9c9a95;
+  --accent:#1b5e3b;--accent2:#247a4f;--accent3:#e6f4ed;
+  --warn:#7c4a00;--warn2:#fff3e0;--warn3:#ffe0b2;
+  --danger:#8b1a1a;--danger2:#fff0f0;--danger3:#ffd5d5;
+  --info:#1a3a6e;--info2:#e8f0fa;
+  --critical:#5c0000;--critical-bg:#fff0f0;
+  --purple:#4a1a7c;--purple-bg:#f3eeff;
+  --r:10px;--rlg:16px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+  --sh2:0 8px 30px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;right:0;width:250px;height:100vh;background:var(--accent);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-main{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.sb-logo-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+.sb-sec{padding:14px 14px 4px;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 8px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.7);font-size:13.5px;border:none;background:none;width:calc(100% - 16px);text-align:right;transition:all .15s}
+.nav:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav.active{background:rgba(255,255,255,.18);color:#fff;font-weight:600}
+.nav svg{width:16px;height:16px;flex-shrink:0;opacity:.8}
+.sb-admin-badge{margin:8px 14px 0;background:rgba(255,220,0,.15);border:1px solid rgba(255,220,0,.3);border-radius:8px;padding:8px 10px;font-size:11px;color:rgba(255,220,80,.9);display:flex;align-items:center;gap:6px}
+.sb-footer{padding:12px 20px;font-size:10px;color:rgba(255,255,255,.25);margin-top:auto}
+
+/* ── MAIN ── */
+.main{margin-right:250px;padding:28px 32px;min-height:100vh}
+.page{display:none}.page.active{display:block}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.ph-title{font-size:22px;font-weight:700;letter-spacing:-.4px}
+.ph-sub{font-size:13px;color:var(--text2);margin-top:3px}
+.ph-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* ── STATS GRID ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px;box-shadow:var(--sh)}
+.stat-lbl{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:30px;font-weight:700;line-height:1;font-family:'JetBrains Mono',monospace}
+.stat-badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;margin-top:8px}
+
+/* ── PANEL ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:22px;box-shadow:var(--sh);margin-bottom:18px}
+.panel-title{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.panel-title span{font-size:18px}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:var(--r);font-family:inherit;font-size:13.5px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--border2)}
+.btn-danger{background:var(--danger2);color:var(--danger);border:1px solid var(--danger3)}
+.btn-warn{background:var(--warn2);color:var(--warn);border:1px solid var(--warn3)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn-gold{background:linear-gradient(135deg,#c8960c,#f0b429);color:#fff;font-weight:600}
+.btn-gold:hover{opacity:.9}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500}
+.bg{background:var(--accent3);color:var(--accent)}
+.bw{background:var(--warn2);color:var(--warn)}
+.bd{background:var(--danger2);color:var(--danger)}
+.bi{background:var(--info2);color:var(--info)}
+.bp{background:var(--purple-bg);color:var(--purple)}
+.bc{background:#fff0f0;color:#5c0000;font-weight:700}
+
+/* ── FORM ── */
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:12px;color:var(--text2);font-weight:500}
+input,select,textarea{font-family:inherit;font-size:13.5px;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);outline:none;transition:border .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent2)}
+textarea{resize:vertical;min-height:70px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:right;padding:9px 13px;font-size:11px;font-weight:600;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab{padding:8px 16px;font-size:13.5px;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* ── DRUG CARD ── */
+.dc{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dc-name{font-size:14px;font-weight:600}
+.dc-info{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5}
+.dc-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);background:var(--accent3);padding:3px 8px;border-radius:6px;white-space:nowrap}
+
+/* ── ALERT ── */
+.alert{padding:11px 14px;border-radius:var(--r);margin-bottom:9px;font-size:13px;line-height:1.5}
+.al-d{background:var(--danger2);border:1px solid var(--danger3);color:var(--danger)}
+.al-w{background:var(--warn2);border:1px solid var(--warn3);color:var(--warn)}
+.al-i{background:var(--info2);border:1px solid #b8cfe8;color:var(--info)}
+.al-g{background:var(--accent3);border:1px solid #b8dfc8;color:var(--accent)}
+.al-c{background:#fff0f0;border:1px solid #ffb3b3;color:#5c0000}
+.al-p{background:var(--purple-bg);border:1px solid #c8a8f0;color:var(--purple)}
+
+/* ── HIGH ALERT CARD ── */
+.hac{border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border-right:4px solid}
+.hac-critical{background:#fff5f5;border-color:#cc0000}
+.hac-high{background:var(--warn2);border-color:#e07000}
+.hac-moderate{background:var(--info2);border-color:#1a5cb0}
+.hac-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.hac-risk{font-size:12px;margin-bottom:3px}
+.hac-action{font-size:12px;opacity:.75}
+
+/* ── DRUG DB CARD (in database page) ── */
+.ddb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.ddb-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px}
+.ddb-header:hover{background:var(--surface2)}
+.ddb-name{font-size:14px;font-weight:600}
+.ddb-cat{font-size:11px;color:var(--text3)}
+.ddb-body{padding:14px 16px;border-top:1px solid var(--border);display:none}
+.ddb-body.open{display:block}
+.ddb-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12.5px}
+.ddb-item label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;display:block;margin-bottom:2px}
+.ddb-item span{color:var(--text)}
+.timing-badge{background:linear-gradient(135deg,var(--accent3),#d0f0df);border:1px solid #a0d8b8;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:5px}
+.se-tag{display:inline-block;background:var(--danger2);color:var(--danger);padding:2px 7px;border-radius:10px;font-size:11px;margin:2px}
+.int-tag{display:inline-block;background:var(--warn2);color:var(--warn);padding:2px 7px;border-radius:10px;font-size:11px;margin:2px}
+.contra-tag{display:inline-block;background:#f5f0ff;color:var(--purple);padding:2px 7px;border-radius:10px;font-size:11px;margin:2px}
+
+/* ── MODAL ── */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;padding:20px}
+.mo.open{display:flex}
+.mo-box{background:var(--surface);border-radius:var(--rlg);padding:26px;width:680px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh2)}
+.mo-title{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.mo-close{cursor:pointer;font-size:22px;color:var(--text3);border:none;background:none;font-family:inherit;line-height:1}
+.mo-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ── ADMIN SPECIFIC ── */
+.admin-gate{background:linear-gradient(135deg,#1b1a18,#2a2820);border-radius:var(--rlg);padding:40px;text-align:center;color:#fff;margin:40px auto;max-width:400px}
+.admin-gate h2{font-size:24px;margin-bottom:8px}
+.admin-gate p{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px}
+.admin-gate input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;text-align:center;font-size:18px;letter-spacing:3px;padding:12px}
+.admin-gate input::placeholder{color:rgba(255,255,255,.3);letter-spacing:0}
+
+.admin-section{background:linear-gradient(135deg,#1b2a1e,#1e2f22);border-radius:var(--rlg);padding:16px 20px;margin-bottom:18px;border:1px solid rgba(255,255,255,.08)}
+.admin-section-title{font-size:13px;font-weight:600;color:rgba(255,220,80,.9);letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+.admin-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.admin-card-title{font-size:13px;font-weight:600;color:#e0ddd8;margin-bottom:4px}
+.admin-card-sub{font-size:12px;color:rgba(255,255,255,.4)}
+
+/* ── SCHEDULE TIMELINE ── */
+.timeline{position:relative;padding-right:24px}
+.timeline::before{content:'';position:absolute;right:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-dot{position:absolute;right:-20px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+.tl-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.tl-time{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent)}
+.tl-drugs{margin-top:6px}
+.tl-drug{font-size:13px;display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid var(--border)}
+.tl-drug:last-child{border-bottom:none}
+
+/* ── RX PRINT ── */
+.rx-card{background:#fff;border:1.5px solid #ccc;border-radius:12px;padding:28px;font-family:'IBM Plex Sans Arabic',sans-serif}
+.rx-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.rx-logo{font-size:20px;font-weight:700;color:var(--accent)}
+.rx-divider{border:none;border-top:2px solid var(--border);margin:12px 0}
+.rx-info{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:13px;margin-bottom:12px}
+.rx-info .k{color:var(--text3)}
+.rx-info .v{font-weight:500}
+.rx-item{display:flex;gap:12px;align-items:flex-start;background:var(--surface2);border-radius:8px;padding:10px 13px;margin-bottom:7px}
+.rx-num{width:26px;height:26px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.rx-drug-name{font-size:14px;font-weight:600}
+.rx-drug-info{font-size:12px;color:var(--text2);margin-top:2px}
+.rx-timing{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)}
+
+/* ── SEARCH ── */
+.search-row{display:flex;gap:10px;margin-bottom:16px}
+.search-row input{flex:1}
+
+/* ── MISC ── */
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-state .icon{font-size:40px;margin-bottom:10px}
+.empty-state p{font-size:14px}
+.pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-family:'JetBrains Mono',monospace}
+
+@media print{.sidebar,.ph-actions,.no-print{display:none!important}.main{margin:0;padding:0}}
+@media(max-width:900px){.sidebar{width:200px}.main{margin-right:200px;padding:16px 18px}}
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo" style="text-align:center; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05)">
+    <div style="font-size:42px; margin-bottom:5px">⚕️</div>
+    <div class="sb-logo-main" style="font-size:15px; color:#e0c080; margin-bottom:2px">الصيدلي أول سريري</div>
+    <div style="font-size:11px; color:#e0c080; font-weight:bold; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px">Senior Clinical Pharmacist</div>
+    <div style="font-size:20px; font-weight:800; color:#ffffff; background:linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px; letter-spacing:1px; margin-bottom:6px; box-shadow:0 4px 6px rgba(0,0,0,0.2)">علي أبودهش</div>
+    <div class="sb-logo-sub" style="font-size:10px; opacity:0.5">Clinical Pharmacy Management</div>
+  </div>
+
+  <div class="sb-sec">المرضى / Patients</div>
+  <button class="nav active" onclick="goPage('dashboard',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    لوحة التحكم / Dashboard
+  </button>
+  <button class="nav" onclick="goPage('patients',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    المرضى / Patients
+  </button>
+  <button class="nav" onclick="goPage('medications',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+    جدول الأدوية / Medications
+  </button>
+  <button class="nav" onclick="goPage('schedule',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    مواعيد الجرعات / Schedule
+  </button>
+  <button class="nav" onclick="goPage('rxprint',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    طباعة الوصفة / Rx Print
+  </button>
+
+  <div class="sb-sec">أدوات سريرية / Clinical Tools</div>
+  <button class="nav" onclick="goPage('drugdb',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    قاعدة بيانات الأدوية / Drug DB
+  </button>
+  <button class="nav" onclick="goPage('highalert',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    قائمة الأدوية المُفشِّلة / High Alert
+  </button>
+  <button class="nav" onclick="goPage('calc',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/></svg>
+    حاسبات سريرية / Calculators
+  </button>
+  <button class="nav" onclick="goPage('interactions',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><circle cx="16" cy="16" r="5"/></svg>
+    تفاعلات الأدوية / Interactions
+  </button>
+  <button class="nav" onclick="goPage('renal',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 3c-1.5 2-2 4-2 6 0 5 3 7 5 9 2-2 5-4 5-9 0-2-.5-4-2-6"/></svg>
+    جرعة الكلى / Renal (CrCl)
+  </button>
+  <button class="nav" onclick="goPage('notes',this)">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    ملاحظات سريرية / Clinical Notes
+  </button>
+
+  <div class="sb-sec">النظام / System</div>
+  <button class="nav" onclick="goPage('admin',this)" id="nav-admin">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6 0-9 2-9 4v1h18v-1c0-2-3-4-9-4z"/><path d="M16 3.5a4 4 0 010 9"/></svg>
+    لوحة الأدمن / Admin Panel
+  </button>
+
+  <div id="admin-badge" class="sb-admin-badge" style="display:none">
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    وضع الأدمن مفعّل
+  </div>
+  <div class="sb-footer">v2.0 — قاعدة بيانات 75+ دواء</div>
+
+  <div class="sb-sec">النظام / System</div>
+  <button class="nav" onclick="doLogout()">
+    <svg fill="none" stroke="#e07000" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    <span style="color:#e07000">تسجيل الخروج / Logout</span>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══ LOGIN PAGE ══ -->
+<div id="page-login" class="page">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--rlg); padding:40px; text-align:center; max-width:400px; box-shadow:var(--sh2)">
+      <div style="font-size:48px; margin-bottom:16px">⚕️</div>
+      <h2 style="margin-bottom:8px; color:var(--text)">حماية الخصوصية</h2>
+      <p style="font-size:14px; color:var(--text3); margin-bottom:24px">الرجاء إدخال كلمة المرور للوصول إلى سجلات المرضى والبيانات السريرية.</p>
+      
+      <div class="fg" style="margin-bottom:16px; text-align:right">
+        <input type="password" id="login-pw" placeholder="كلمة المرور (الافتراضية: admin123)" onkeydown="if(event.key==='Enter')doLogin()" style="text-align:center; letter-spacing:2px">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()" style="width:100%; padding:12px; font-size:15px">تسجيل الدخول</button>
+      <div id="login-err" style="color:var(--danger); font-size:13px; margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ DASHBOARD ══ -->
+<div id="page-dashboard" class="page active">
+  <div class="ph">
+    <div><div class="ph-title">لوحة التحكم / Dashboard</div><div class="ph-sub" id="dash-date"></div></div>
+    <div class="ph-actions"><button class="btn btn-primary" onclick="openModal('mo-add-patient')">+ مريض جديد / New Patient</button></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-lbl">إجمالي المرضى / Total Patients</div><div class="stat-val" id="d-total">0</div><div class="badge bi" style="margin-top:8px">نشط</div></div>
+    <div class="stat"><div class="stat-lbl">إجمالي الأدوية</div><div class="stat-val" id="d-meds">0</div><div class="badge bg" style="margin-top:8px">وصفة</div></div>
+    <div class="stat"><div class="stat-lbl">أدوية مُفشِّلة / High Alert Meds</div><div class="stat-val" id="d-ha">0</div><div class="badge bc" style="margin-top:8px">تنبيه</div></div>
+    <div class="stat"><div class="stat-lbl">أدوية في قاعدة البيانات / Drugs in DB</div><div class="stat-val" id="d-db">0</div><div class="badge bp" style="margin-top:8px">سجل</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
+    <div class="panel">
+      <div class="panel-title"><span>⏰</span> الجرعات القادمة اليوم / Upcoming Doses</div>
+      <div id="dash-doses"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>🚨</span> تنبيهات الأدوية المُفشِّلة / High Alert Alerts / High Alert Meds</div>
+      <div id="dash-ha-preview"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span>👥</span> آخر المرضى / Recent Patients</div>
+    <div class="tw"><table><thead><tr><th>المريض</th><th>العمر / Age</th><th>التشخيص / Diagnosis</th><th>الأدوية / Meds</th><th>إجراء / Action</th></tr></thead>
+    <tbody id="dash-pt-table"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ PATIENTS ══ -->
+<div id="page-patients" class="page">
+  <div class="ph">
+    <div><div class="ph-title">المرضى / Patients</div><div class="ph-sub">إدارة بيانات المرضى / Patients</div></div>
+    <div class="ph-actions"><button class="btn btn-primary" onclick="openModal('mo-add-patient')">+ مريض جديد / New Patient</button></div>
+  </div>
+  <div class="search-row"><input type="text" id="pt-search" placeholder="🔍  بحث بالاسم أو رقم الملف..." oninput="renderPatients()"></div>
+  <div class="panel"><div class="tw"><table><thead><tr><th>الاسم / Name</th><th>العمر / Age</th><th>الجنس / Gender</th><th>التشخيص / Diagnosis</th><th>الحساسية / Allergies</th><th>الأدوية / Meds</th><th>إجراءات / Actions</th></tr></thead>
+  <tbody id="pt-table"></tbody></table></div></div>
+</div>
+
+<!-- ══ MEDICATIONS ══ -->
+<div id="page-medications" class="page">
+  <div class="ph"><div><div class="ph-title">جدول الأدوية / Medications</div><div class="ph-sub">إضافة وإدارة الأدوية لكل مريض</div></div></div>
+  <div class="panel">
+    <div class="fg" style="max-width:360px;margin-bottom:18px">
+      <label>اختر مريضاً</label>
+      <select id="med-pt-sel" onchange="loadMeds()"><option value="">— اختر —</option></select>
+    </div>
+    <div id="med-list"></div>
+    <div id="med-add-btn" style="display:none;margin-top:14px">
+      <button class="btn btn-secondary" onclick="showMedForm()">+ إضافة دواء</button>
+    </div>
+    <div id="med-form" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)">
+      <div style="font-size:14px;font-weight:600;margin-bottom:14px">إضافة دواء جديد</div>
+      <div class="grid3" style="margin-bottom:12px">
+        <div class="fg"><label>اسم الدواء / Drug Name *</label>
+          <input type="text" id="m-name" placeholder="ابدأ بالكتابة للبحث..." list="drug-suggestions" oninput="autofillDrug()">
+          <datalist id="drug-suggestions"></datalist>
+        </div>
+        <div class="fg"><label>الجرعة / Dose *</label><input type="text" id="m-dose" placeholder="مثال: 500mg"></div>
+        <div class="fg"><label>التكرار / Frequency</label>
+          <select id="m-freq">
+            <option>مرة يومياً / Once daily (OD)</option><option>مرتين يومياً / Twice daily (BID)</option>
+            <option>ثلاث مرات يومياً / 3 times daily (TID)</option><option>أربع مرات يومياً / 4 times daily (QID)</option>
+            <option>كل 8 ساعات / Every 8 hours (q8h)</option><option>كل 6 ساعات / Every 6 hours (q6h)</option>
+            <option>أسبوعياً / Weekly</option><option>عند الحاجة / As needed (PRN)</option>
+          </select>
+        </div>
+        <div class="fg"><label>وقت الجرعة الأولى / First Dose Time (24h)</label><input type="time" id="m-time" value="08:00"></div>
+        <div class="fg"><label>العلاقة بالطعام / Food Relation</label>
+          <select id="m-food">
+            <option>مع الطعام / With food</option><option>قبل الطعام / Before food (30 min)</option>
+            <option>بعد الطعام / After food</option><option>على معدة فارغة / Empty stomach</option>
+            <option>بغض النظر عن الطعام / Regardless of food</option>
+          </select>
+        </div>
+        <div class="fg"><label>طريق الإعطاء / Route</label>
+          <select id="m-route">
+            <option>فموي / Oral (PO)</option><option>وريدي / Intravenous (IV)</option>
+            <option>عضلي / Intramuscular (IM)</option><option>تحت الجلد / Subcutaneous (SC)</option>
+            <option>استنشاق / Inhalation</option><option>موضعي / Topical</option><option>قطرة للعين / Ophthalmic</option><option>أخرى / Other</option>
+          </select>
+        </div>
+        <div class="fg full"><label>ملاحظات للمريض / Patient Notes</label><input type="text" id="m-notes" placeholder="تعليمات خاصة..."></div>
+      </div>
+      <!-- autofill info box -->
+      <div id="drug-info-box" style="display:none" class="alert al-i" style="margin-bottom:12px"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="addMed()">إضافة الدواء</button>
+        <button class="btn btn-secondary" onclick="hideMedForm()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCHEDULE ══ -->
+<div id="page-schedule" class="page">
+  <div class="ph"><div><div class="ph-title">مواعيد الجرعات / Schedule</div><div class="ph-sub">جدول يومي مرئي</div></div></div>
+  <div class="panel">
+    <div class="fg" style="max-width:360px;margin-bottom:20px">
+      <label>اختر مريضاً</label>
+      <select id="sch-pt-sel" onchange="loadSchedule()"><option value="">— اختر —</option></select>
+    </div>
+    <div id="sch-view"><div class="empty-state"><div class="icon">🕐</div><p>اختر مريضاً لعرض جدول جرعاته</p></div></div>
+  </div>
+</div>
+
+<!-- ══ RX PRINT ══ -->
+<div id="page-rxprint" class="page">
+  <div class="ph"><div><div class="ph-title">طباعة الوصفة / Rx Print</div><div class="ph-sub">إصدار وصفة دوائية شاملة</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px">
+    <div class="panel">
+      <div class="panel-title"><span>📋</span> بيانات الوصفة</div>
+      <div class="fg" style="margin-bottom:10px"><label>المريض</label><select id="rx-pt" onchange="renderRx()"><option value="">— اختر —</option></select></div>
+      
+      <div class="fg" style="margin-bottom:10px"><label>التاريخ / Date</label><input type="date" id="rx-date" oninput="renderRx()"></div>
+      <div class="fg" style="margin-bottom:16px"><label>ملاحظات / Notes</label><textarea id="rx-notes" placeholder="تعليمات إضافية..." oninput="renderRx()"></textarea></div>
+      <button class="btn btn-primary" style="width:100%; margin-bottom:10px" onclick="window.print()">🖨 طباعة / PDF</button>
+      <button class="btn btn-success" style="width:100%; background:#10b981" onclick="exportRxImage()">📸 حفظ كصورة ومشاركة / Save & Share Image</button>
+    </div>
+    <div id="rx-preview" class="rx-card">
+      <div class="empty-state"><div class="icon">📄</div><p>اختر مريضاً لمعاينة الوصفة</p></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ CALCULATORS ══ -->
+<div id="page-calc" class="page">
+  <div class="ph">
+    <div><div class="ph-title">🧮 حاسبات سريرية / Clinical Calculators</div><div class="ph-sub">أدوات حساب الجرعات والمؤشرات الحيوية</div></div>
+  </div>
+  <div class="grid3">
+    <!-- BMI / BSA -->
+    <div class="rx-card">
+      <div style="font-weight:bold; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px">BMI & BSA (مساحة السطح)</div>
+      <div class="fg"><label>الوزن / Weight (kg)</label><input type="number" id="calc-wt" oninput="calcBMI()"></div>
+      <div class="fg"><label>الطول / Height (cm)</label><input type="number" id="calc-ht" oninput="calcBMI()"></div>
+      <div id="calc-bmi-res" style="margin-top:10px; font-weight:bold; color:var(--primary); line-height:1.5">أدخل البيانات...</div>
+    </div>
+    
+    <!-- CHADS2-VASc -->
+    <div class="rx-card">
+      <div style="font-weight:bold; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px">CHADS₂-VASc Score (Afib Risk)</div>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-c" onchange="calcCV()"> فشل القلب / CHF (+1)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-h" onchange="calcCV()"> ضغط دم / HTN (+1)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-a2" onchange="calcCV()"> العمر ≥ 75 / Age ≥ 75 (+2)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-d" onchange="calcCV()"> سكري / Diabetes (+1)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-s" onchange="calcCV()"> جلطة سابقة / Stroke/TIA (+2)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-v" onchange="calcCV()"> أمراض وعائية / Vascular (+1)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-a1" onchange="calcCV()"> العمر 65-74 / Age 65-74 (+1)</label>
+      <label style="display:block;margin-bottom:5px"><input type="checkbox" id="cv-sc" onchange="calcCV()"> أنثى / Female (+1)</label>
+      <div id="calc-cv-res" style="margin-top:10px; font-weight:bold; color:var(--primary); line-height:1.5">النتيجة: 0 (خطر منخفض)</div>
+    </div>
+    
+    <!-- Corrected Calcium -->
+    <div class="rx-card">
+      <div style="font-weight:bold; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px">الكالسيوم المصحح / Corrected Calcium</div>
+      <div class="fg"><label>الكالسيوم / Serum Ca (mg/dL)</label><input type="number" id="calc-ca" oninput="calcCa()"></div>
+      <div class="fg"><label>الألبومين / Albumin (g/dL)</label><input type="number" id="calc-alb" oninput="calcCa()"></div>
+      <div id="calc-ca-res" style="margin-top:10px; font-weight:bold; color:var(--primary); line-height:1.5">أدخل البيانات...</div>
+    </div>
+    
+    <!-- Gentamicin Dosing -->
+    <div class="rx-card" style="grid-column: span 1;">
+      <div style="font-weight:bold; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px">جرعة الجنتاميسين / Gentamicin Dose</div>
+      <div class="fg"><label>الوزن / Weight (kg)</label><input type="number" id="calc-gent-wt" oninput="calcGent()"></div>
+      <div class="fg"><label>الطول / Height (cm)</label><input type="number" id="calc-gent-ht" oninput="calcGent()"></div>
+      <div class="fg"><label>الجنس / Gender</label><select id="calc-gent-sex" onchange="calcGent()"><option value="m">ذكر / Male</option><option value="f">أنثى / Female</option></select></div>
+      <div id="calc-gent-res" style="margin-top:10px; font-weight:bold; color:var(--primary); font-size:13px; line-height:1.5">أدخل البيانات...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRUG DATABASE ══ -->
+<div id="page-drugdb" class="page">
+  <div class="ph">
+    <div><div class="ph-title">قاعدة بيانات الأدوية / Drug DB</div><div class="ph-sub" id="db-count-label">جار التحميل...</div></div>
+    <div class="ph-actions">
+      <select id="db-cat-filter" onchange="renderDrugDB()" style="padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);font-family:inherit;font-size:13px">
+        <option value="">جميع الفئات</option>
+      </select>
+      <button class="btn btn-gold" id="db-edit-btn" onclick="openAddDrugModal()" style="display:none">+ إضافة دواء</button>
+    </div>
+  </div>
+  <div class="search-row"><input type="text" id="db-search" placeholder="🔍  ابحث باسم الدواء أو الفئة أو الأعراض..." oninput="renderDrugDB()"></div>
+  <div id="drug-db-list"></div>
+</div>
+
+<!-- ══ HIGH ALERT ══ -->
+<div id="page-highalert" class="page">
+  <div class="ph">
+    <div><div class="ph-title">الأدوية المُفشِّلة / High Alert Meds</div><div class="ph-sub">High-Alert Medications — أدوية عالية الخطورة تستوجب يقظة مضاعفة</div></div>
+    <div class="ph-actions"><button class="btn btn-gold" id="ha-edit-btn" onclick="openAddHAModal()" style="display:none">+ إضافة تنبيه</button></div>
+  </div>
+  <div class="alert al-c" style="margin-bottom:18px">
+    ⚠ هذه الأدوية تسبب أضراراً بالغة عند الخطأ في الجرعة أو الإعطاء. يجب التحقق المزدوج والتثقيف الكامل للمريض والمُعطي.
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('ha','critical')">🔴 خطير جداً</button>
+    <button class="tab" onclick="switchTab('ha','high')">🟠 خطير</button>
+    <button class="tab" onclick="switchTab('ha','moderate')">🔵 متوسط الخطورة</button>
+    <button class="tab" onclick="switchTab('ha','all')">الكل</button>
+  </div>
+  <div id="ha-critical" class="tab-panel active"><div id="ha-list-critical"></div></div>
+  <div id="ha-high" class="tab-panel"><div id="ha-list-high"></div></div>
+  <div id="ha-moderate" class="tab-panel"><div id="ha-list-moderate"></div></div>
+  <div id="ha-all" class="tab-panel"><div id="ha-list-all"></div></div>
+</div>
+
+<!-- ══ INTERACTIONS ══ -->
+<div id="page-interactions" class="page">
+  <div class="ph"><div><div class="ph-title">تفاعلات الأدوية / Interactions</div><div class="ph-sub">فحص DDI</div></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('int','manual')">فحص يدوي</button>
+    <button class="tab" onclick="switchTab('int','patient')">فحص لمريض</button>
+    <button class="tab" onclick="switchTab('int','dbview')">قاعدة التفاعلات</button>
+  </div>
+  <div id="int-manual" class="tab-panel active">
+    <div class="panel">
+      <div class="panel-title"><span>🔬</span> أدخل الأدوية</div>
+      <div id="int-inputs">
+        <div style="display:flex;gap:10px;margin-bottom:10px"><input class="int-inp" type="text" placeholder="الدواء الأول..." style="flex:1"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">×</button></div>
+        <div style="display:flex;gap:10px;margin-bottom:10px"><input class="int-inp" type="text" placeholder="الدواء الثاني..." style="flex:1"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">×</button></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn btn-secondary btn-sm" onclick="addIntField()">+ دواء آخر</button>
+        <button class="btn btn-primary" onclick="checkInt()">فحص التفاعلات</button>
+      </div>
+    </div>
+    <div id="int-manual-results"></div>
+  </div>
+  <div id="int-patient" class="tab-panel">
+    <div class="panel">
+      <div class="fg" style="max-width:340px;margin-bottom:16px"><label>اختر مريضاً</label>
+        <select id="int-pt-sel" onchange="checkPatientInt()"><option value="">— اختر —</option></select></div>
+      <div id="int-pt-results"><div class="empty-state"><div class="icon">🔍</div><p>اختر مريضاً لفحص أدويته</p></div></div>
+    </div>
+  </div>
+  <div id="int-dbview" class="tab-panel">
+    <div class="panel">
+      <div class="search-row"><input type="text" id="int-db-search" placeholder="ابحث في قاعدة التفاعلات..." oninput="renderIntDB()"></div>
+      <div class="tw"><table><thead><tr><th>الدواء 1</th><th>الدواء 2</th><th>الشدة</th><th>التأثير</th><th>التوصية</th></tr></thead>
+      <tbody id="int-db-table"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RENAL ══ -->
+<div id="page-renal" class="page">
+  <div class="ph"><div><div class="ph-title">حساب وظائف الكلى / Renal Function</div><div class="ph-sub">Cockcroft-Gault — تعديل الجرعة</div></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="panel">
+      <div class="panel-title"><span>🧮</span> بيانات المريض</div>
+      <div class="grid2" style="gap:12px">
+        <div class="fg"><label>العمر (سنة)</label><input type="number" id="r-age" oninput="calcCrCl()"></div>
+        <div class="fg"><label>الجنس</label><select id="r-sex" onchange="calcCrCl()"><option value="male">ذكر</option><option value="female">أنثى</option></select></div>
+        <div class="fg"><label>الوزن (كجم)</label><input type="number" id="r-wt" oninput="calcCrCl()"></div>
+        <div class="fg"><label>الكرياتينين (mg/dL)</label><input type="number" id="r-cr" step="0.1" oninput="calcCrCl()"></div>
+      </div>
+      <div id="crcl-result" style="margin-top:16px;display:none">
+        <div style="background:var(--accent3);border:1px solid #a0d8b8;border-radius:var(--r);padding:16px;text-align:center">
+          <div style="font-size:12px;color:var(--accent);font-weight:500">CrCl (Cockcroft-Gault)</div>
+          <div style="font-size:36px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace" id="crcl-val"></div>
+          <div style="font-size:13px;color:var(--accent)" id="crcl-interp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span>💊</span> توصيات تعديل الجرعة</div>
+      <div id="renal-recs"><div class="empty-state"><div class="icon">⚕</div><p>أدخل بيانات المريض</p></div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span>📊</span> جدول تعديل جرعات الأدوية الشائعة مع القصور الكلوي</div>
+    <div class="tw"><table><thead><tr><th>الدواء</th><th>طبيعي (>60)</th><th>خفيف (30-60)</th><th>متوسط (15-30)</th><th>شديد (<15)</th><th>ملاحظة</th></tr></thead>
+    <tbody id="renal-table"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ NOTES ══ -->
+<div id="page-notes" class="page">
+  <div class="ph">
+    <div><div class="ph-title">ملاحظات سريرية / Clinical Notes</div><div class="ph-sub">توثيق المراجعات والحالات</div></div>
+    <div class="ph-actions"><button class="btn btn-primary" onclick="openModal('mo-add-note')">+ ملاحظة</button></div>
+  </div>
+  <div class="panel">
+    <div class="fg" style="max-width:340px;margin-bottom:16px"><label>تصفية</label>
+      <select id="notes-filter" onchange="renderNotes()"><option value="">جميع المرضى / Patients</option></select></div>
+    <div id="notes-list"></div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="page-admin" class="page">
+  <div class="ph"><div><div class="ph-title">لوحة الأدمن / Admin Panel</div><div class="ph-sub">إدارة قاعدة البيانات والإعدادات</div></div></div>
+  <div id="admin-gate-view">
+    <div class="admin-gate">
+      <div style="font-size:40px;margin-bottom:12px">🔐</div>
+      <h2>دخول الأدمن</h2>
+      <p>أدخل كلمة مرور المسؤول للوصول إلى إعدادات قاعدة البيانات</p>
+      <div class="fg" style="margin-bottom:16px;text-align:right">
+        <input type="password" id="admin-pw" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')checkAdmin()">
+      </div>
+      <button class="btn btn-gold" onclick="checkAdmin()" style="width:100%">دخول</button>
+      <div id="admin-err" style="color:#ff8888;font-size:13px;margin-top:10px"></div>
+    </div>
+  </div>
+  <div id="admin-panel" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+      <div class="admin-section">
+        <div class="admin-section-title">📊 إحصائيات قاعدة البيانات</div>
+        <div class="admin-card"><div class="admin-card-title" id="adm-stat-drugs" style="color:#b0e0c0">0 دواء</div><div class="admin-card-sub">في قاعدة بيانات الأدوية / Drug DB</div></div>
+        <div class="admin-card"><div class="admin-card-title" id="adm-stat-ha" style="color:#ffcc88">0 دواء مُفشِّل</div><div class="admin-card-sub">في قائمة التنبيهات</div></div>
+        <div class="admin-card"><div class="admin-card-title" id="adm-stat-pts" style="color:#88aaff">0 مريض</div><div class="admin-card-sub">في السجلات</div></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">⚙️ إجراءات سريعة</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-gold btn-sm" onclick="openAddDrugModal()">+ إضافة دواء لقاعدة البيانات</button>
+          <button class="btn btn-warn btn-sm" onclick="openAddHAModal()">+ إضافة دواء مُفشِّل</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportData()">📥 تصدير جميع البيانات (JSON)</button>
+          <button class="btn btn-danger btn-sm" onclick="resetDB()">🔄 إعادة تعيين قاعدة البيانات للافتراضي</button>
+        </div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-title">💊 تعديل أدوية قاعدة البيانات</div>
+      <div class="search-row"><input type="text" id="adm-drug-search" placeholder="ابحث عن دواء للتعديل..." oninput="renderAdminDrugList()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#e0ddd8"></div>
+      <div id="adm-drug-list" style="max-height:360px;overflow-y:auto"></div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-title">🚨 تعديل قائمة الأدوية المُفشِّلة / High Alert Meds / High Alert</div>
+      <div id="adm-ha-list" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+    <div class="admin-section" style="border-color:rgba(255,60,60,.2)">
+      <div class="admin-section-title" style="color:#ff8888">🔒 تغيير كلمة مرور الأدمن</div>
+      <div style="display:flex;gap:10px">
+        <input type="password" id="new-pw" placeholder="كلمة مرور جديدة" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#e0ddd8;flex:1">
+        <button class="btn btn-danger btn-sm" onclick="changeAdminPw()">تغيير</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Add Patient -->
+<div class="mo" id="mo-add-patient">
+  <div class="mo-box">
+    <div class="mo-title">إضافة مريض جديد / New Patient <button class="mo-close" onclick="closeModal('mo-add-patient')">×</button></div>
+    <div class="grid2">
+      <div class="fg"><label>الاسم الكامل *</label><input type="text" id="p-name"></div>
+      <div class="fg"><label>العمر *</label><input type="number" id="p-age"></div>
+      <div class="fg"><label>الجنس</label><select id="p-sex"><option>ذكر</option><option>أنثى</option></select></div>
+      <div class="fg"><label>رقم الملف</label><input type="text" id="p-mrn" placeholder="MRN-..."></div>
+      <div class="fg"><label>الوزن (كجم)</label><input type="number" id="p-wt"></div>
+      <div class="fg"><label>الكرياتينين (mg/dL)</label><input type="number" id="p-cr" step="0.1"></div>
+      <div class="fg full"><label>التشخيص</label><input type="text" id="p-dx" placeholder="DM, HTN, CKD..."></div>
+      <div class="fg full"><label>الحساسية الدوائية</label><input type="text" id="p-allergy" placeholder="Penicillin, Sulfa..."></div>
+    </div>
+    <div class="mo-foot"><button class="btn btn-secondary" onclick="closeModal('mo-add-patient')">إلغاء</button><button class="btn btn-primary" onclick="addPatient()">حفظ</button></div>
+  </div>
+</div>
+
+<!-- Add Note -->
+<div class="mo" id="mo-add-note">
+  <div class="mo-box">
+    <div class="mo-title">إضافة ملاحظة سريرية <button class="mo-close" onclick="closeModal('mo-add-note')">×</button></div>
+    <div class="fg" style="margin-bottom:12px"><label>المريض</label><select id="note-pt"></select></div>
+    <div class="fg" style="margin-bottom:12px"><label>النوع</label>
+      <select id="note-type"><option>مراجعة دوائية</option><option>متابعة</option><option>توصية للطبيب</option><option>تثقيف المريض</option><option>تقرير حادثة دوائية</option><option>أخرى</option></select></div>
+    <div class="fg"><label>الملاحظة *</label><textarea id="note-text" style="min-height:120px"></textarea></div>
+    <div class="mo-foot"><button class="btn btn-secondary" onclick="closeModal('mo-add-note')">إلغاء</button><button class="btn btn-primary" onclick="addNote()">حفظ</button></div>
+  </div>
+</div>
+
+<!-- Add Drug to DB -->
+<div class="mo" id="mo-add-drug">
+  <div class="mo-box" style="width:780px">
+    <div class="mo-title"><span id="mo-drug-title">إضافة دواء جديد</span> <button class="mo-close" onclick="closeModal('mo-add-drug')">×</button></div>
+    <input type="hidden" id="edit-drug-id">
+    <div class="grid3" style="gap:12px;margin-bottom:12px">
+      <div class="fg full"><label>اسم الدواء (عربي + إنجليزي) *</label><input type="text" id="nd-name"></div>
+      <div class="fg"><label>الفئة الرئيسية *</label>
+        <input type="text" id="nd-category" list="cat-list">
+        <datalist id="cat-list"></datalist>
+      </div>
+      <div class="fg"><label>الجرعة المعتادة</label><input type="text" id="nd-dose"></div>
+      <div class="fg"><label>التكرار / Frequency</label><input type="text" id="nd-freq"></div>
+      <div class="fg"><label>الوقت المثالي للاستعمال ⭐</label><input type="text" id="nd-timing" placeholder="مثال: صباحاً على معدة فارغة / Empty stomach"></div>
+      <div class="fg"><label>العلاقة بالطعام / Food Relation</label><input type="text" id="nd-food"></div>
+      <div class="fg"><label>طريق الإعطاء / Route</label><input type="text" id="nd-route"></div>
+      <div class="fg"><label>الوقت المثالي المختصر</label>
+        <select id="nd-optimal">
+          <option>صباحاً</option><option>مساءً</option><option>ليلاً</option>
+          <option>مع وجبة</option><option>أي وقت ثابت</option>
+          <option>صباحاً ومساءً</option><option>عند الحاجة</option>
+          <option>قبل الإفطار</option><option>قبل النوم</option>
+        </select>
+      </div>
+      <div class="fg"><label>نصف العمر (Half-life)</label><input type="text" id="nd-halflife"></div>
+      <div class="fg full"><label>الأعراض الجانبية الرئيسية</label><input type="text" id="nd-se" placeholder="افصل بفاصلة: غثيان، دوخة، ..."></div>
+      <div class="fg full"><label>موانع الاستعمال</label><input type="text" id="nd-contra" placeholder="حمل، قصور كلوي، ..."></div>
+      <div class="fg full"><label>التفاعلات الدوائية المهمة</label><input type="text" id="nd-int" placeholder="Warfarin, NSAIDs, ..."></div>
+      <div class="fg full"><label>تعديل الجرعة مع الكلى</label><input type="text" id="nd-renal"></div>
+      <div class="fg full"><label>الآلية (Mechanism)</label><input type="text" id="nd-mech"></div>
+      <div class="fg full"><label>ملاحظات وتنبيهات مهمة</label><textarea id="nd-notes" style="min-height:70px"></textarea></div>
+      <div class="fg"><label>Black Box Warning</label><input type="text" id="nd-bb" placeholder="إن وجد"></div>
+      <div class="fg"><label>الفئة الفرعية</label><input type="text" id="nd-cat2"></div>
+    </div>
+    <div class="mo-foot">
+      <button class="btn btn-secondary" onclick="closeModal('mo-add-drug')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveDrugEntry()">حفظ في قاعدة البيانات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add High Alert -->
+<div class="mo" id="mo-add-ha">
+  <div class="mo-box">
+    <div class="mo-title"><span id="mo-ha-title">إضافة دواء مُفشِّل</span> <button class="mo-close" onclick="closeModal('mo-add-ha')">×</button></div>
+    <input type="hidden" id="edit-ha-id">
+    <div class="fg" style="margin-bottom:12px"><label>اسم الدواء / Drug Name *</label><input type="text" id="ha-drug"></div>
+    <div class="fg" style="margin-bottom:12px"><label>درجة الخطورة</label>
+      <select id="ha-sev"><option value="critical">🔴 خطير جداً</option><option value="high">🟠 خطير</option><option value="moderate">🔵 متوسط</option></select></div>
+    <div class="fg" style="margin-bottom:12px"><label>نوع الخطر *</label><textarea id="ha-risk" style="min-height:80px"></textarea></div>
+    <div class="fg" style="margin-bottom:12px"><label>الإجراء الواجب اتخاذه *</label><textarea id="ha-action" style="min-height:80px"></textarea></div>
+    <div class="mo-foot">
+      <button class="btn btn-secondary" onclick="closeModal('mo-add-ha')">إلغاء</button>
+      <button class="btn btn-warn" onclick="saveHAEntry()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script src="drug-db.js?v=1778264485281"></script>
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const S = {
+  get patients(){ return JSON.parse(localStorage.getItem('cp_patients')||'[]') },
+  set patients(v){ localStorage.setItem('cp_patients',JSON.stringify(v)) },
+  get meds(){ return JSON.parse(localStorage.getItem('cp_meds')||'{}') },
+  set meds(v){ localStorage.setItem('cp_meds',JSON.stringify(v)) },
+  get notes(){ return JSON.parse(localStorage.getItem('cp_notes')||'[]') },
+  set notes(v){ localStorage.setItem('cp_notes',JSON.stringify(v)) },
+  get adminPw(){ return localStorage.getItem('cp_admin_pw')||'admin123' },
+  get isAdmin(){ return sessionStorage.getItem('cp_admin')==='1' },
+  set isAdmin(v){ v ? sessionStorage.setItem('cp_admin','1') : sessionStorage.removeItem('cp_admin') },
+};
+
+// Interactions DB (embedded)
+const INT_DB = [
+  {d1:'Warfarin',d2:'Aspirin',sev:'major',effect:'زيادة خطر النزيف بشكل كبير',rec:'تجنب أو مراقبة INR مكثفة'},
+  {d1:'Warfarin',d2:'NSAIDs',sev:'major',effect:'زيادة التأثير المضاد للتخثر ونزيف هضمي',rec:'تجنب إن أمكن — أضف PPI'},
+  {d1:'Warfarin',d2:'Amiodarone',sev:'major',effect:'مضاعفة تأثير Warfarin',rec:'تخفيض جرعة Warfarin 30-50%، مراقبة INR'},
+  {d1:'Metformin',d2:'Contrast',sev:'major',effect:'خطر الحماض اللبني',rec:'وقف Metformin 48 ساعة قبل وبعد الصبغة'},
+  {d1:'Simvastatin',d2:'Amiodarone',sev:'major',effect:'زيادة خطر رابدوميوليسيس',rec:'حد أقصى 20mg Simvastatin'},
+  {d1:'Simvastatin',d2:'Amlodipine',sev:'moderate',effect:'زيادة مستوى Simvastatin',rec:'حد أقصى 20mg Simvastatin'},
+  {d1:'Clopidogrel',d2:'Omeprazole',sev:'moderate',effect:'تقليل تحويل Clopidogrel لصورته النشطة',rec:'استبدل بـ Pantoprazole'},
+  {d1:'Digoxin',d2:'Amiodarone',sev:'major',effect:'رفع مستوى Digoxin وسمية قلبية',rec:'تخفيض جرعة Digoxin 50%'},
+  {d1:'Lithium',d2:'NSAIDs',sev:'major',effect:'رفع مستوى Lithium وسميته',rec:'مراقبة مستوى Lithium'},
+  {d1:'Lithium',d2:'ACE Inhibitors',sev:'major',effect:'رفع مستوى Lithium',rec:'مراقبة مستوى Lithium دورياً'},
+  {d1:'Ciprofloxacin',d2:'Antacids',sev:'moderate',effect:'تقليل امتصاص Ciprofloxacin',rec:'فصل الجرعتين بـ 2 ساعة'},
+  {d1:'Levothyroxine',d2:'Calcium',sev:'moderate',effect:'تقليل امتصاص Levothyroxine',rec:'فصل بـ 4 ساعات'},
+  {d1:'Levothyroxine',d2:'Iron',sev:'moderate',effect:'تقليل امتصاص Levothyroxine',rec:'فصل بـ 4 ساعات'},
+  {d1:'Methotrexate',d2:'NSAIDs',sev:'major',effect:'تقليل إفراز MTX وزيادة سميته',rec:'تجنب التركيب'},
+  {d1:'Methotrexate',d2:'Cotrimoxazole',sev:'major',effect:'زيادة سمية MTX الدموية',rec:'تجنب — بديل مضاد حيوي آخر'},
+  {d1:'Colchicine',d2:'Clarithromycin',sev:'major',effect:'تراكم Colchicine — قد يكون مميتاً',rec:'تجنب التركيب'},
+  {d1:'Tramadol',d2:'SSRIs',sev:'major',effect:'متلازمة السيروتونين',rec:'تجنب أو مراقبة مكثفة'},
+  {d1:'MAOIs',d2:'SSRIs',sev:'major',effect:'متلازمة السيروتونين القاتلة',rec:'فصل 14 يوماً على الأقل'},
+  {d1:'Fluconazole',d2:'Warfarin',sev:'major',effect:'رفع INR بشكل كبير',rec:'مراقبة INR يومياً في بدء العلاج'},
+  {d1:'Fluconazole',d2:'Statins',sev:'moderate',effect:'زيادة مستوى Statin وخطر العضلات',rec:'توقف Statin مؤقتاً إن أمكن'},
+  {d1:'Allopurinol',d2:'Azathioprine',sev:'major',effect:'تراكم Azathioprine وسمية نخاع',rec:'تخفيض Azathioprine 75%'},
+  {d1:'ACE Inhibitors',d2:'Potassium',sev:'moderate',effect:'فرط بوتاسيوم الدم',rec:'مراقبة مستوى البوتاسيوم'},
+  {d1:'ACE Inhibitors',d2:'ARBs',sev:'major',effect:'قصور كلوي حاد وفرط بوتاسيوم',rec:'تجنب التركيب'},
+  {d1:'Heparin',d2:'Aspirin',sev:'moderate',effect:'زيادة خطر النزيف',rec:'مراقبة علامات النزيف'},
+];
+
+const RENAL_TABLE = [
+  {drug:'Metformin',n:'500-1000mg BD',mild:'500mg BD',mod:'500mg OD (تحذير)',sev:'ممنوع',note:'خطر حماض لبني'},
+  {drug:'Amoxicillin',n:'500mg TDS',mild:'500mg TDS',mod:'500mg BD',sev:'500mg OD',note:''},
+  {drug:'Ciprofloxacin',n:'500mg BD',mild:'500mg BD',mod:'250mg BD',sev:'250mg OD',note:''},
+  {drug:'Digoxin',n:'0.125-0.25mg',mild:'0.125mg',mod:'0.0625mg',sev:'تجنب',note:'مراقبة مستوى'},
+  {drug:'Gabapentin',n:'300mg TDS',mild:'300mg BD',mod:'300mg OD',sev:'كل 48 ساعة',note:''},
+  {drug:'Pregabalin',n:'150mg BD',mild:'75mg BD',mod:'75mg OD',sev:'25-75mg OD',note:''},
+  {drug:'Lisinopril',n:'10-40mg OD',mild:'10mg OD',mod:'5mg OD',sev:'2.5mg (احتياط)',note:'راقب K⁺ وكرياتينين'},
+  {drug:'Furosemide',n:'20-80mg',mild:'طبيعي',mod:'زيادة الجرعة',sev:'80-160mg',note:'قد تحتاج جرعات أعلى'},
+  {drug:'Allopurinol',n:'300mg OD',mild:'200mg OD',mod:'100mg OD',sev:'100mg/48h',note:''},
+  {drug:'Vancomycin',n:'حسب TDM',mild:'حسب TDM',mod:'تمديد الفترة',sev:'TDM حتمي',note:''},
+  {drug:'Trimethoprim',n:'طبيعي',mild:'طبيعي',mod:'تخفيض',sev:'تجنب',note:''},
+  {drug:'Colchicine',n:'0.5-1mg BD',mild:'0.5mg BD',mod:'0.5mg OD',sev:'تجنب',note:''},
+];
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function goPage(id, btn) {
+  const restrictedPages = ['dashboard', 'patients', 'medications', 'schedule', 'rxprint', 'notes'];
+  if (restrictedPages.includes(id) && localStorage.getItem('cp_logged_in') !== 'true') {
+     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+     document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+     document.getElementById('page-login').classList.add('active');
+     return;
+  }
+  
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const fns = {
+    dashboard:renderDashboard, patients:renderPatients,
+    drugdb:renderDrugDB, highalert:renderHighAlert,
+    interactions:renderIntDB, renal:renderRenalTable,
+    notes:renderNotes, admin:renderAdmin,
+    medications:()=>populateSelects(), schedule:()=>populateSelects(),
+    rxprint:()=>{populateSelects();document.getElementById('rx-date').valueAsDate=new Date()}
+  };
+  if(fns[id]) fns[id]();
+}
+
+// ══════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════
+function openModal(id){ populateSelects(); document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// ══════════════════════════════════════
+// POPULATE SELECTS
+// ══════════════════════════════════════
+function populateSelects(){
+  const pts = S.patients;
+  ['med-pt-sel','sch-pt-sel','rx-pt','int-pt-sel','notes-filter','note-pt'].forEach(sid=>{
+    const el = document.getElementById(sid); if(!el) return;
+    const cur = el.value;
+    const isFilter = sid==='notes-filter';
+    el.innerHTML = (isFilter?'<option value="">جميع المرضى / Patients</option>':'<option value="">— اختر —</option>') +
+      pts.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+    el.value = cur;
+  });
+  // drug suggestions
+  const db = getDrugDB();
+  const dl = document.getElementById('drug-suggestions');
+  if(dl) dl.innerHTML = db.map(d=>`<option value="${d.name}">`).join('');
+  // cat list for admin
+  const cats = [...new Set(db.map(d=>d.category))];
+  const cl = document.getElementById('cat-list');
+  if(cl) cl.innerHTML = cats.map(c=>`<option value="${c}">`).join('');
+}
+
+// ══════════════════════════════════════
+// AUTOFILL DRUG FROM DB
+// ══════════════════════════════════════
+function autofillDrug(){
+  const name = document.getElementById('m-name').value.trim().toLowerCase();
+  const db = getDrugDB();
+  const match = db.find(d=>d.name.toLowerCase().includes(name));
+  const box = document.getElementById('drug-info-box');
+  if(match && name.length>2){
+    document.getElementById('m-dose').value = match.dose;
+    
+    // Fallback logic for time parsing if not strictly matched
+    let t = match.optimalTime || '';
+    if (t.match(/\d{2}:\d{2}/)) t = t.match(/\d{2}:\d{2}/)[0];
+    else t = getTimeFromOptimal(t);
+    document.getElementById('m-time').value = t;
+    
+    // Auto-select food
+    const foodSel = document.getElementById('m-food');
+    for(let o of foodSel.options) {
+      if(match.food && (o.value.includes(match.food.split('/')[0].trim()) || match.food.includes(o.value.split('/')[0].trim()))) { 
+        foodSel.value = o.value; break; 
+      }
+    }
+    
+    // Auto-select route
+    const routeSel = document.getElementById('m-route');
+    for(let o of routeSel.options) {
+      if(match.route && (match.route.includes(o.value.split('/')[0].trim()) || o.value.includes(match.route.split('/')[0].trim()) || match.route.toLowerCase().includes(o.value.split('/')[1].trim().toLowerCase().split(' ')[0]) )) { 
+        routeSel.value = o.value; break; 
+      }
+    }
+    
+    // Auto-select freq
+    const freqSel = document.getElementById('m-freq');
+    for(let o of freqSel.options) {
+      if(match.freq && (match.freq.includes(o.value.split('/')[0].trim()) || o.value.includes(match.freq.split('/')[0].trim()) )) { 
+        freqSel.value = o.value; break; 
+      }
+    }
+
+    box.style.display='block';
+    box.innerHTML = `<strong>✓ تم استيراد بيانات: ${match.name}</strong><br>
+      <span style="font-family:'JetBrains Mono',monospace;color:var(--accent)">⏰ الوقت المثالي: ${match.timing}</span><br>
+      ${match.sideEffects?'<span style="color:var(--danger)">⚠ أعراض جانبية: '+match.sideEffects.split(',').slice(0,3).join('، ')+'</span>':''}
+      
+      ${(match.renalAdj && !match.renalAdj.includes('لا تعديل') && !match.renalAdj.includes('N/A'))?'<br><span style="color:#d97706;font-weight:bold;background:#fef3c7;padding:2px 4px;border-radius:4px;font-size:12px">⚠️ تعديل كلوي: '+match.renalAdj+'</span>':''}
+${match.interactions?'<br><span style="color:var(--warn)">🔗 تفاعلات مهمة: '+match.interactions.split(',').slice(0,3).join('، ')+'</span>':''}`;
+  } else { box.style.display='none'; }
+}
+
+function getTimeFromOptimal(opt=''){
+  const map={'صباحاً':'08:00','ليلاً':'22:00','مساءً':'20:00','قبل النوم':'22:00','قبل الإفطار':'07:30','مع وجبة':'13:00','أي وقت':'08:00'};
+  for(let k in map) if(opt.includes(k)) return map[k];
+  return '08:00';
+}
+
+// ══════════════════════════════════════
+// PATIENTS
+// ══════════════════════════════════════
+function addPatient(){
+  const name=document.getElementById('p-name').value.trim();
+  const age=document.getElementById('p-age').value;
+  if(!name||!age){alert('الاسم والعمر مطلوبان');return;}
+  const pts=S.patients;
+  const p={id:Date.now().toString(),name,age,gender:document.getElementById('p-sex').value,
+    mrn:document.getElementById('p-mrn').value||('MRN-'+Math.floor(Math.random()*9000+1000)),
+    weight:document.getElementById('p-wt').value,cr:document.getElementById('p-cr').value,
+    diagnosis:document.getElementById('p-dx').value,allergies:document.getElementById('p-allergy').value,
+    date:new Date().toLocaleDateString('ar-SA')};
+  pts.unshift(p);S.patients=pts;
+  const m=S.meds;m[p.id]=[];S.meds=m;
+  closeModal('mo-add-patient');
+  ['p-name','p-age','p-mrn','p-wt','p-cr','p-dx','p-allergy'].forEach(i=>document.getElementById(i).value='');
+  renderPatients();renderDashboard();
+}
+function deletePatient(id){
+  if(!confirm('حذف المريض وجميع بياناته؟'))return;
+  S.patients=S.patients.filter(p=>p.id!==id);
+  const m=S.meds;delete m[id];S.meds=m;
+  S.notes=S.notes.filter(n=>n.patientId!==id);
+  renderPatients();renderDashboard();
+}
+function renderPatients(){
+  const q=(document.getElementById('pt-search')?.value||'').toLowerCase();
+  const pts=S.patients.filter(p=>p.name.toLowerCase().includes(q)||p.mrn?.toLowerCase().includes(q));
+  const tb=document.getElementById('pt-table');
+  if(!pts.length){tb.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="icon">👤</div><p>لا يوجد مرضى</p></div></td></tr>';return;}
+  tb.innerHTML=pts.map(p=>`<tr>
+    <td><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--text3)">${p.mrn||''}</span></td>
+    <td>${p.age}</td><td>${p.gender}</td>
+    <td style="font-size:12px;max-width:160px">${p.diagnosis||'—'}</td>
+    <td style="font-size:12px;color:var(--danger)">${p.allergies||'لا شيء'}</td>
+    <td><span class="badge bi">${(S.meds[p.id]||[]).length}</span></td>
+    <td style="display:flex;gap:5px">
+      <button class="btn btn-secondary btn-xs" onclick="goToMeds('${p.id}')">أدوية</button>
+      <button class="btn btn-danger btn-xs" onclick="deletePatient('${p.id}')">حذف</button>
+    </td></tr>`).join('');
+}
+function goToMeds(id){
+  goPage('medications',document.querySelector('.nav[onclick*="medications"]'));
+  setTimeout(()=>{document.getElementById('med-pt-sel').value=id;loadMeds();},50);
+}
+
+// ══════════════════════════════════════
+// MEDICATIONS
+// ══════════════════════════════════════
+function loadMeds(){
+  const id=document.getElementById('med-pt-sel').value;
+  const list=document.getElementById('med-list');
+  const addBtn=document.getElementById('med-add-btn');
+  if(!id){list.innerHTML='<div class="empty-state"><div class="icon">💊</div><p>اختر مريضاً</p></div>';addBtn.style.display='none';return;}
+  const meds=(S.meds[id]||[]);
+  addBtn.style.display='block';
+  if(!meds.length){list.innerHTML='<div class="alert al-i">لا توجد أدوية لهذا المريض.</div>';return;}
+  list.innerHTML=meds.map((m,i)=>`
+    <div class="dc">
+      <div>
+        <div class="dc-name">${m.name} <span style="font-weight:400;font-size:12px;color:var(--text2)">${m.dose}</span></div>
+        <div class="dc-info">${m.freq} — ${m.route} — ${m.food}</div>
+        ${m.notes?`<div class="dc-info" style="color:var(--warn)">⚠ ${m.notes}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        <span class="dc-time">${getTimes(m.time,m.freq).join(' | ')}</span>
+        <button class="btn btn-danger btn-xs" onclick="deleteMed('${id}',${i})">حذف</button>
+      </div>
+    </div>`).join('');
+}
+function showMedForm(){document.getElementById('med-form').style.display='block';document.getElementById('med-add-btn').style.display='none';}
+function hideMedForm(){document.getElementById('med-form').style.display='none';document.getElementById('med-add-btn').style.display='block';}
+function addMed(){
+  const id=document.getElementById('med-pt-sel').value;
+  const name=document.getElementById('m-name').value.trim();
+  if(!id||!name){alert('اختر مريضاً وأدخل اسم الدواء');return;}
+  const m=S.meds; if(!m[id])m[id]=[];
+  m[id].push({name,dose:document.getElementById('m-dose').value,
+    freq:document.getElementById('m-freq').value,time:document.getElementById('m-time').value,
+    food:document.getElementById('m-food').value,route:document.getElementById('m-route').value,
+    notes:document.getElementById('m-notes').value});
+  S.meds=m;
+  ['m-name','m-dose','m-notes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('drug-info-box').style.display='none';
+  hideMedForm();loadMeds();
+}
+function deleteMed(pid,idx){
+  const m=S.meds;m[pid].splice(idx,1);S.meds=m;loadMeds();
+}
+function getTimes(startTime='08:00',freq='مرة يومياً / Once daily (OD)'){
+  const[h,min]=startTime.split(':').map(Number);
+  const base=h*60+min;
+  const fmt=ms=>{const hh=Math.floor((ms%1440)/60).toString().padStart(2,'0');const mm=(ms%60).toString().padStart(2,'0');return`${hh}:${mm}`};
+  if(freq.includes('مرة')||freq.includes('OD'))return[fmt(base)];
+  if(freq.includes('مرتين')||freq.includes('BID'))return[fmt(base),fmt(base+720)];
+  if(freq.includes('ثلاث')||freq.includes('TID'))return[fmt(base),fmt(base+480),fmt(base+960)];
+  if(freq.includes('أربع')||freq.includes('QID'))return[fmt(base),fmt(base+360),fmt(base+720),fmt(base+1080)];
+  if(freq.includes('6'))return[fmt(base),fmt(base+360),fmt(base+720),fmt(base+1080)];
+  if(freq.includes('8'))return[fmt(base),fmt(base+480),fmt(base+960)];
+  if(freq.includes('أسبوع'))return[fmt(base)+' (أسبوعياً / Weekly)'];
+  return[fmt(base)];
+}
+
+// ══════════════════════════════════════
+// SCHEDULE
+// ══════════════════════════════════════
+function loadSchedule(){
+  const id=document.getElementById('sch-pt-sel').value;
+  const view=document.getElementById('sch-view');
+  if(!id){view.innerHTML='<div class="empty-state"><div class="icon">🕐</div><p>اختر مريضاً</p></div>';return;}
+  const meds=S.meds[id]||[];
+  const p=S.patients.find(x=>x.id===id);
+  if(!meds.length){view.innerHTML='<div class="alert al-i">لا أدوية.</div>';return;}
+  const tl={};
+  meds.forEach(m=>{ getTimes(m.time,m.freq).forEach(t=>{ const tk=t.replace(' (أسبوعياً / Weekly)',''); if(!tl[tk])tl[tk]=[]; tl[tk].push(m); }); });
+  const sorted=Object.keys(tl).sort();
+  view.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <div style="font-size:14px"><strong>${p.name}</strong> — ${meds.length} دواء — ${sorted.length} موعد يومي</div>
+      ${p.allergies?`<span class="badge bd">حساسية: ${p.allergies}</span>`:''}
+    </div>
+    <div class="timeline">
+      ${sorted.map(t=>`
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-card">
+            <div class="tl-time">${t}</div>
+            <div class="tl-drugs">
+              ${tl[t].map(m=>`<div class="tl-drug">
+                <span style="font-weight:600">${m.name}</span>
+                <span class="badge bi">${m.dose}</span>
+                <span style="font-size:11px;color:var(--text3)">${m.food}</span>
+                ${m.notes?`<span style="font-size:11px;color:var(--warn)">⚠ ${m.notes}</span>`:''}
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>`).join('')}
+        <div style="text-align:center; margin-top:20px; border-top:1px dashed #ccc; padding-top:15px">
+      <img id="rx-qr-img" width="130" height="130" style="display:none; margin:0 auto; border:1px solid #eee">
+      <div style="font-size:10px; color:#666; margin-top:5px">Scan to view medications / امسح الكود لعرض الأدوية</div>
+    </div>
+  </div>`;
+
+
+
+}
+
+// ══════════════════════════════════════
+// RX PRINT
+// ══════════════════════════════════════
+
+function exportRxImage() {
+  const ptId = document.getElementById('rx-pt').value;
+  if(!ptId) { alert('الرجاء اختيار مريض أولاً'); return; }
+  const ptName = S.patients.find(p=>p.id===ptId)?.name || 'Patient';
+  const rxDate = document.getElementById('rx-date').value || new Date().toISOString().split('T')[0];
+  
+  const element = document.getElementById('rx-preview');
+  
+  const originalBackground = element.style.background;
+  element.style.background = '#ffffff';
+  element.style.color = '#1f2937';
+  
+  html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+    element.style.background = originalBackground;
+    element.style.color = '';
+    
+    canvas.toBlob(blob => {
+       const url = URL.createObjectURL(blob);
+       
+       const a = document.createElement('a');
+       a.href = url;
+       const fileName = ptName.replace(/\s+/g, '_') + '_' + rxDate + '.png';
+       a.download = fileName;
+       document.body.appendChild(a);
+       a.click();
+       document.body.removeChild(a);
+       
+       if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: "image/png" })] })) {
+         const file = new File([blob], fileName, { type: "image/png" });
+         navigator.share({
+           title: 'وصفة طبية / Prescription',
+           text: 'وصفة طبية للمريض: ' + ptName,
+           files: [file]
+         }).catch(console.error);
+       }
+    });
+  });
+}
+
+
+// ══ BACKUP & RESTORE ══
+function exportData() {
+  const data = { patients: S.patients, meds: S.meds, v: Date.now() };
+  const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Pharma_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(data.patients) localStorage.setItem('cp_patients', JSON.stringify(data.patients));
+      if(data.meds) localStorage.setItem('cp_meds', JSON.stringify(data.meds));
+      alert('تم استعادة البيانات بنجاح! سيتم إعادة تحميل الصفحة للتطبيق.');
+      location.reload();
+    } catch(err) { alert('عذراً، الملف تالف أو غير مدعوم!'); }
+  };
+  reader.readAsText(file);
+}
+
+// ══ CALCULATORS ══
+function calcBMI() {
+  const w = parseFloat(document.getElementById('calc-wt').value);
+  const h = parseFloat(document.getElementById('calc-ht').value)/100;
+  if(w && h) {
+    const bmi = (w/(h*h)).toFixed(1);
+    const bsa = Math.sqrt((w*(h*100))/3600).toFixed(2);
+    let st = bmi<18.5?'نحافة':bmi<25?'طبيعي':bmi<30?'وزن زائد':'سمنة';
+    document.getElementById('calc-bmi-res').innerHTML = `BMI: ${bmi} (${st})<br>BSA: ${bsa} m²`;
+  }
+}
+function calcCV() {
+  let sc = 0;
+  if(document.getElementById('cv-c').checked) sc+=1;
+  if(document.getElementById('cv-h').checked) sc+=1;
+  if(document.getElementById('cv-a2').checked) sc+=2;
+  if(document.getElementById('cv-d').checked) sc+=1;
+  if(document.getElementById('cv-s').checked) sc+=2;
+  if(document.getElementById('cv-v').checked) sc+=1;
+  if(document.getElementById('cv-a1').checked) sc+=1;
+  if(document.getElementById('cv-sc').checked) sc+=1;
+  
+  let rec = sc===0 ? '(خطر منخفض / Low Risk)' : sc===1 ? '(خطر متوسط - قد يحتاج مميع / Moderate Risk)' : '(خطر عالي - ينصح بمميع دم OAC / High Risk)';
+  document.getElementById('calc-cv-res').innerHTML = `النتيجة (Score): ${sc}<br>${rec}`;
+}
+
+function calcGent() {
+  const w = parseFloat(document.getElementById('calc-gent-wt').value);
+  const h = parseFloat(document.getElementById('calc-gent-ht').value);
+  const sex = document.getElementById('calc-gent-sex').value;
+  if(w && h) {
+    let ibw = sex === 'm' ? 50 + 2.3 * ((h / 2.54) - 60) : 45.5 + 2.3 * ((h / 2.54) - 60);
+    if(ibw < 0) ibw = w; // fallback for very short height inputs
+    let dosingWeight = w;
+    let type = '(Actual)';
+    if(w > 1.2 * ibw) {
+      dosingWeight = ibw + 0.4 * (w - ibw);
+      type = '(Adjusted)';
+    } else if (w >= ibw) {
+      dosingWeight = ibw;
+      type = '(Ideal)';
+    }
+    
+    const doseExt = Math.round(dosingWeight * 7); 
+    const doseTrad = Math.round(dosingWeight * 1.5); 
+    
+    document.getElementById('calc-gent-res').innerHTML = `
+      وزن الجرعة: ${dosingWeight.toFixed(1)} kg ${type}<br>
+      <span style="color:#d97706;display:block;margin-top:4px">الجرعة الممتدة (Extended/q24h):<br>${doseExt} mg</span>
+      <span style="color:var(--accent);display:block;margin-top:4px">الجرعة التقليدية (Traditional/q8h):<br>${doseTrad} mg</span>
+    `;
+  }
+}
+
+function calcCa() {
+  const ca = parseFloat(document.getElementById('calc-ca').value);
+  const alb = parseFloat(document.getElementById('calc-alb').value);
+  if(ca && alb) {
+    const corr = ca + 0.8 * (4 - alb);
+    document.getElementById('calc-ca-res').innerHTML = `الكالسيوم المصحح: ${corr.toFixed(2)} mg/dL`;
+  }
+}
+
+function renderRx(){
+  const id=document.getElementById('rx-pt').value;
+  const prev=document.getElementById('rx-preview');
+  if(!id){prev.innerHTML='<div class="empty-state"><div class="icon">📄</div><p>اختر مريضاً</p></div>';return;}
+  const p=S.patients.find(x=>x.id===id);
+  const meds=S.meds[id]||[];
+  const dr='علي أبودهش';
+  const fac='';
+  const date=document.getElementById('rx-date').value||new Date().toLocaleDateString('ar-SA');
+  const notes=document.getElementById('rx-notes').value;
+  prev.innerHTML=`
+    <div class="rx-header">
+      <div><div class="rx-logo">⚕ وصفة طبية / Medical Prescription</div></div>
+      <div style="text-align:left;font-size:12px;color:var(--text3)">${date}</div>
+    </div>
+    <hr class="rx-divider">
+    <div class="rx-info">
+      <div class="k">المريض / Patient:</div><div class="v">${p.name}</div>
+      <div class="k">العمر / Age:</div><div class="v">${p.age} سنة</div>
+      <div class="k">رقم الملف / MRN:</div><div class="v">${p.mrn||'—'}</div>
+      <div class="k">الجنس / Gender:</div><div class="v">${p.gender}</div>
+      ${p.allergies?`<div class="k" style="color:var(--danger)">حساسية:</div><div class="v" style="color:var(--danger)">${p.allergies}</div>`:''}
+    </div>
+    <hr class="rx-divider">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600">الأدوية الموصوفة / Prescribed Medications (${meds.length}):</div>
+    ${meds.length?meds.map((m,i)=>`
+      <div class="rx-item">
+        <div class="rx-num">${i+1}</div>
+        <div>
+          <div class="rx-drug-name">${m.name} — ${m.dose}</div>
+          <div class="rx-drug-info">${m.freq} | ${m.food} | ${m.route}</div>
+          <div class="rx-timing">⏰ ${getTimes(m.time,m.freq).join(' ، ')}</div>
+          ${m.notes?`<div style="font-size:11px;color:var(--warn);margin-top:2px">⚠ ${m.notes}</div>`:''}
+        </div>
+      </div>`).join(''):'<div class="alert al-w">لا توجد أدوية</div>'}
+    ${notes?`<hr class="rx-divider"><div style="font-size:13px;color:var(--text2)"><strong>ملاحظات / Notes:</strong> ${notes}</div>`:''}
+    <hr class="rx-divider">
+    <div style="display:flex;justify-content:center;align-items:center;font-size:12px;color:var(--text3);margin-top:20px;padding-top:10px;border-top:1px solid #eee">
+      <div style="text-align:center">
+        <div style="font-weight:bold; font-size:14px; color:var(--text)">الصيدلي أول سريري / Senior Clinical Pharmacist</div>
+        <div style="font-size:18px; font-weight:800; color:var(--accent); margin-top:4px">د. علي أبودهش</div>
+      </div>
+    </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+// DRUG DATABASE
+// ══════════════════════════════════════
+function renderDrugDB(){
+  const db=getDrugDB();
+  const q=(document.getElementById('db-search')?.value||'').toLowerCase();
+  const cat=(document.getElementById('db-cat-filter')?.value||'');
+  // populate categories
+  const cats=[...new Set(db.map(d=>d.category))].sort();
+  const cf=document.getElementById('db-cat-filter');
+  if(cf){const cur=cf.value;cf.innerHTML='<option value="">جميع الفئات</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');cf.value=cur||cat;}
+  const filtered=db.filter(d=>
+    (!cat||d.category===cat)&&
+    (!q||d.name.toLowerCase().includes(q)||d.category.toLowerCase().includes(q)||
+     d.sideEffects?.toLowerCase().includes(q)||d.interactions?.toLowerCase().includes(q)||
+     d.mechanism?.toLowerCase().includes(q)||(d.category2||'').toLowerCase().includes(q))
+  );
+  document.getElementById('db-count-label').textContent=`${filtered.length} دواء من أصل ${db.length}`;
+  const el=document.getElementById('drug-db-list');
+  const isAdmin=S.isAdmin;
+  if(!filtered.length){el.innerHTML='<div class="empty-state"><div class="icon">🔍</div><p>لا نتائج</p></div>';return;}
+  el.innerHTML=filtered.map(d=>`
+    <div class="ddb-card">
+      <div class="ddb-header" onclick="toggleDDB('${d.id}')">
+        <div>
+          <div class="ddb-name">${d.name} ${d.blackBox?'<span class="badge bc" style="font-size:10px">⬛ تحذير</span>':''}</div>
+          <div class="ddb-cat">${d.category} ${d.category2?'· '+d.category2:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="timing-badge">⏰ ${d.optimalTime||d.timing||'—'}</span>
+          ${isAdmin?`<button class="btn btn-gold btn-xs no-print" onclick="event.stopPropagation();editDrug('${d.id}')">تعديل</button>
+          <button class="btn btn-danger btn-xs no-print" onclick="event.stopPropagation();deleteDrugDB('${d.id}')">حذف</button>`:''}
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="ddb-body" id="ddb-${d.id}">
+        <div class="ddb-grid">
+          <div class="ddb-item"><label>الجرعة</label><span>${d.dose||'—'}</span></div>
+          <div class="ddb-item"><label>التكرار / Frequency</label><span>${d.freq||'—'}</span></div>
+          <div class="ddb-item"><label>الوقت المثالي</label><span style="color:var(--accent);font-weight:600">${d.timing||'—'}</span></div>
+          <div class="ddb-item"><label>مع / بدون طعام</label><span>${d.food||'—'}</span></div>
+          <div class="ddb-item"><label>طريق الإعطاء / Route</label><span>${d.route||'—'}</span></div>
+          <div class="ddb-item"><label>نصف العمر</label><span style="font-family:'JetBrains Mono',monospace">${d.halfLife||'—'}</span></div>
+        </div>
+        <div style="margin-top:12px">
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:5px">⚠ الأعراض الجانبية</div>
+          <div>${(d.sideEffects||'—').split(',').map(s=>`<span class="se-tag">${s.trim()}</span>`).join('')}</div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:5px">🔗 التفاعلات المهمة</div>
+          <div>${(d.interactions||'—').split(',').map(s=>`<span class="int-tag">${s.trim()}</span>`).join('')}</div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:5px">🚫 موانع الاستعمال</div>
+          <div>${(d.contraindications||'—').split(',').map(s=>`<span class="contra-tag">${s.trim()}</span>`).join('')}</div>
+        </div>
+        ${d.renalAdj?`<div style="margin-top:10px"><div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px">🫘 تعديل الكلى</div><div style="font-size:13px">${d.renalAdj}</div></div>`:''}
+        ${d.mechanism?`<div style="margin-top:10px"><div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px">⚙ الآلية</div><div style="font-size:13px">${d.mechanism}</div></div>`:''}
+        ${d.notes?`<div style="margin-top:10px;background:var(--accent3);border-radius:8px;padding:10px;font-size:13px;color:var(--accent)"><strong>📝 ملاحظات / Notes:</strong> ${d.notes}</div>`:''}
+        ${d.blackBox?`<div style="margin-top:10px;background:#fff0f0;border-radius:8px;padding:10px;font-size:13px;color:#5c0000;font-weight:600">⬛ Black Box: ${d.blackBox}</div>`:''}
+      </div>
+    </div>`).join('');
+  if(isAdmin)document.getElementById('db-edit-btn').style.display='block';
+}
+function toggleDDB(id){
+  const el=document.getElementById('ddb-'+id);
+  el.classList.toggle('open');
+}
+
+// ══════════════════════════════════════
+// HIGH ALERT
+// ══════════════════════════════════════
+function renderHighAlert(){
+  const db=getHighAlertDB();
+  const isAdmin=S.isAdmin;
+  if(isAdmin)document.getElementById('ha-edit-btn').style.display='block';
+  ['critical','high','moderate'].forEach(sev=>{
+    const items=db.filter(d=>d.severity===sev);
+    const el=document.getElementById('ha-list-'+sev);
+    if(!items.length){el.innerHTML='<div class="empty-state"><div class="icon">✓</div><p>لا يوجد في هذا المستوى</p></div>';return;}
+    el.innerHTML=items.map(d=>`
+      <div class="hac hac-${sev}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="hac-title">${sev==='critical'?'🔴':sev==='high'?'🟠':'🔵'} ${d.drug}</div>
+          ${isAdmin?`<div style="display:flex;gap:5px"><button class="btn btn-gold btn-xs" onclick="editHA('${d.id}')">تعديل</button><button class="btn btn-danger btn-xs" onclick="deleteHA('${d.id}')">حذف</button></div>`:''}
+        </div>
+        <div class="hac-risk">⚠ <strong>الخطر:</strong> ${d.risk}</div>
+        <div class="hac-action">✅ <strong>الإجراء:</strong> ${d.action}</div>
+      </div>`).join('');
+  });
+  // all
+  const allEl=document.getElementById('ha-list-all');
+  allEl.innerHTML=db.map(d=>`
+    <div class="hac hac-${d.severity}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="hac-title">${d.severity==='critical'?'🔴':d.severity==='high'?'🟠':'🔵'} ${d.drug} <span class="badge ${d.severity==='critical'?'bc':d.severity==='high'?'bw':'bi'}">${d.severity==='critical'?'خطير جداً':d.severity==='high'?'خطير':'متوسط'}</span></div>
+        ${isAdmin?`<div style="display:flex;gap:5px"><button class="btn btn-gold btn-xs" onclick="editHA('${d.id}')">تعديل</button><button class="btn btn-danger btn-xs" onclick="deleteHA('${d.id}')">حذف</button></div>`:''}
+      </div>
+      <div class="hac-risk">⚠ ${d.risk}</div>
+      <div class="hac-action">✅ ${d.action}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════
+function addIntField(){
+  const d=document.createElement('div');d.style.cssText='display:flex;gap:10px;margin-bottom:10px';
+  d.innerHTML=`<input class="int-inp" type="text" placeholder="اسم دواء..." style="flex:1"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('int-inputs').appendChild(d);
+}
+function checkInt(){
+  const names=Array.from(document.querySelectorAll('.int-inp')).map(i=>i.value.trim().toLowerCase()).filter(Boolean);
+  const results=[];
+  for(let i=0;i<names.length;i++) for(let j=i+1;j<names.length;j++){
+    const f=findInteraction(names[i],names[j]);
+    if(f)results.push(f);
+  }
+  const el=document.getElementById('int-manual-results');
+  if(!results.length){el.innerHTML='<div class="alert al-g">✓ لم يُكشف عن تفاعلات معروفة في قاعدة البيانات.</div>';return;}
+  el.innerHTML=results.map(r=>`<div class="alert ${r.sev==='major'?'al-d':'al-w'}">
+    <strong>${r.d1} + ${r.d2}</strong> <span class="badge ${r.sev==='major'?'bd':'bw'}">${r.sev==='major'?'خطير':'متوسط'}</span>
+    <div style="margin-top:5px">${r.effect}</div>
+    <div style="font-size:12px;margin-top:3px;opacity:.8">📋 ${r.rec}</div>
+  </div>`).join('');
+}
+function checkPatientInt(){
+  const id=document.getElementById('int-pt-sel').value;
+  const el=document.getElementById('int-pt-results');
+  if(!id){el.innerHTML='<div class="empty-state"><div class="icon">🔍</div><p>اختر مريضاً</p></div>';return;}
+  const meds=S.meds[id]||[];
+  const names=meds.map(m=>m.name.toLowerCase());
+  const results=[];
+  for(let i=0;i<names.length;i++) for(let j=i+1;j<names.length;j++){
+    const f=findInteraction(names[i],names[j]);
+    if(f)results.push(f);
+  }
+  if(!results.length){el.innerHTML=`<div class="alert al-g">✓ لم يُكشف عن تفاعلات بين ${meds.length} دواء.</div>`;return;}
+  el.innerHTML=results.map(r=>`<div class="alert ${r.sev==='major'?'al-d':'al-w'}">
+    <strong>${r.d1} + ${r.d2}</strong> <span class="badge ${r.sev==='major'?'bd':'bw'}">${r.sev==='major'?'خطير':'متوسط'}</span>
+    <div style="margin-top:5px">${r.effect}</div>
+    <div style="font-size:12px;margin-top:3px;opacity:.8">📋 ${r.rec}</div>
+  </div>`).join('');
+}
+function findInteraction(a,b){
+  return INT_DB.find(r=>
+    (r.d1.toLowerCase().includes(a)||a.includes(r.d1.toLowerCase()))&&
+    (r.d2.toLowerCase().includes(b)||b.includes(r.d2.toLowerCase()))||
+    (r.d1.toLowerCase().includes(b)||b.includes(r.d1.toLowerCase()))&&
+    (r.d2.toLowerCase().includes(a)||a.includes(r.d2.toLowerCase()))
+  );
+}
+function renderIntDB(){
+  const q=(document.getElementById('int-db-search')?.value||'').toLowerCase();
+  const data=INT_DB.filter(r=>!q||r.d1.toLowerCase().includes(q)||r.d2.toLowerCase().includes(q));
+  document.getElementById('int-db-table').innerHTML=data.map(r=>`<tr>
+    <td><strong>${r.d1}</strong></td><td>${r.d2}</td>
+    <td><span class="badge ${r.sev==='major'?'bd':'bw'}">${r.sev==='major'?'خطير':'متوسط'}</span></td>
+    <td style="font-size:12px">${r.effect}</td>
+    <td style="font-size:12px;color:var(--text2)">${r.rec}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════
+// RENAL
+// ══════════════════════════════════════
+function calcCrCl(){
+  const age=+document.getElementById('r-age').value;
+  const wt=+document.getElementById('r-wt').value;
+  const cr=+document.getElementById('r-cr').value;
+  const sex=document.getElementById('r-sex').value;
+  if(!age||!wt||!cr)return;
+  let crcl=((140-age)*wt)/(72*cr);
+  if(sex==='female')crcl*=0.85;
+  crcl=Math.round(crcl*10)/10;
+  const el=document.getElementById('crcl-result');el.style.display='block';
+  document.getElementById('crcl-val').textContent=crcl+' ml/min';
+  const interp=crcl>=90?'طبيعي':crcl>=60?'قصور خفيف':crcl>=30?'قصور متوسط':crcl>=15?'قصور شديد':'قصور شديد جداً';
+  document.getElementById('crcl-interp').textContent=interp;
+  const color=crcl>=60?'al-g':crcl>=30?'al-w':'al-d';
+  document.getElementById('renal-recs').innerHTML=`
+    <div class="alert ${color}">
+      <strong>CrCl = ${crcl} ml/min — ${interp}</strong>
+      <div style="margin-top:6px;font-size:13px">
+        ${crcl>=90?'لا يلزم تعديل جرعة لمعظم الأدوية.':
+          crcl>=60?'راقب الأدوية المُفرزة كلوياً.':
+          crcl>=30?'تعديل جرعة ضروري. راجع الجدول.':
+          'تعديل جذري مطلوب. تجنب عدة أدوية.'}
+      </div>
+    </div>`;
+}
+function renderRenalTable(){
+  document.getElementById('renal-table').innerHTML=RENAL_TABLE.map(r=>`<tr>
+    <td><strong>${r.drug}</strong></td><td>${r.n}</td><td>${r.mild}</td><td>${r.mod}</td>
+    <td style="color:${r.sev.includes('ممنوع')||r.sev.includes('تجنب')?'var(--danger)':'inherit'}">${r.sev}</td>
+    <td style="font-size:12px;color:var(--text2)">${r.note}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════
+// NOTES
+// ══════════════════════════════════════
+function addNote(){
+  const pid=document.getElementById('note-pt').value;
+  const text=document.getElementById('note-text').value.trim();
+  if(!pid||!text){alert('اختر مريضاً وأدخل الملاحظة');return;}
+  const p=S.patients.find(x=>x.id===pid);
+  const n=S.notes;
+  n.unshift({id:Date.now().toString(),patientId:pid,patientName:p?.name||'',
+    type:document.getElementById('note-type').value,text,
+    date:new Date().toLocaleString('ar-SA')});
+  S.notes=n;
+  document.getElementById('note-text').value='';
+  closeModal('mo-add-note');renderNotes();
+}
+function deleteNote(id){S.notes=S.notes.filter(n=>n.id!==id);renderNotes();}
+function renderNotes(){
+  populateSelects();
+  const filter=document.getElementById('notes-filter')?.value||'';
+  const notes=filter?S.notes.filter(n=>n.patientId===filter):S.notes;
+  const el=document.getElementById('notes-list');
+  if(!notes.length){el.innerHTML='<div class="empty-state"><div class="icon">📝</div><p>لا توجد ملاحظات</p></div>';return;}
+  el.innerHTML=notes.map(n=>`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <div><strong>${n.patientName}</strong> <span class="badge bi">${n.type}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:var(--text3)">${n.date}</span>
+          <button class="btn btn-danger btn-xs" onclick="deleteNote('${n.id}')">×</button>
+        </div>
+      </div>
+      <div style="font-size:13.5px;line-height:1.6">${n.text}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════
+function renderDashboard(){
+  document.getElementById('dash-date').textContent='اليوم: '+new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const pts=S.patients; const meds=S.meds; const db=getDrugDB(); const ha=getHighAlertDB();
+  document.getElementById('d-total').textContent=pts.length;
+  document.getElementById('d-meds').textContent=Object.values(meds).reduce((a,b)=>a+b.length,0);
+  document.getElementById('d-ha').textContent=ha.filter(d=>d.severity==='critical').length;
+  document.getElementById('d-db').textContent=db.length;
+  // doses
+  const allDoses=[];
+  pts.forEach(p=>(meds[p.id]||[]).forEach(m=>getTimes(m.time,m.freq).forEach(t=>allDoses.push({pt:p.name,drug:m.name,dose:m.dose,time:t.replace(' (أسبوعياً / Weekly)','')}))));
+  allDoses.sort((a,b)=>{
+    if(a.time.includes('PRN') || a.time.includes('حاجة')) return 1;
+    if(b.time.includes('PRN') || b.time.includes('حاجة')) return -1;
+    return a.time.localeCompare(b.time);
+  });
+  document.getElementById('dash-doses').innerHTML=allDoses.slice(0,8).map(d=>`
+    <div class="dc" style="margin-bottom:7px">
+      <div><div class="dc-name">${d.drug} <span style="font-weight:400;font-size:12px;color:var(--text2)">${d.dose}</span></div>
+      <div class="dc-info">${d.pt}</div></div>
+      <span class="dc-time">${d.time}</span>
+    </div>`).join('')||'<div class="empty-state" style="padding:20px"><p>لا أدوية مضافة بعد</p></div>';
+  // HA preview
+  const criticals=ha.filter(d=>d.severity==='critical').slice(0,4);
+  document.getElementById('dash-ha-preview').innerHTML=criticals.map(d=>`
+    <div style="background:#fff5f5;border-right:3px solid #cc0000;border-radius:8px;padding:10px 12px;margin-bottom:7px">
+      <div style="font-size:13px;font-weight:600;color:#5c0000">🔴 ${d.drug}</div>
+      <div style="font-size:11px;color:#7a2020;margin-top:2px">${d.risk.slice(0,70)}${d.risk.length>70?'...':''}</div>
+    </div>`).join('')||'<div class="empty-state" style="padding:20px"><p>لا تنبيهات</p></div>';
+  // table
+  const tb=document.getElementById('dash-pt-table');
+  if(!pts.length){tb.innerHTML='<tr><td colspan="5"><div class="empty-state" style="padding:24px"><p>لا مرضى بعد</p></div></td></tr>';return;}
+  tb.innerHTML=pts.slice(0,6).map(p=>`<tr>
+    <td><strong>${p.name}</strong></td><td>${p.age}</td>
+    <td style="font-size:12px">${p.diagnosis||'—'}</td>
+    <td><span class="badge bi">${(meds[p.id]||[]).length}</span></td>
+    <td><button class="btn btn-secondary btn-xs" onclick="goToMeds('${p.id}')">عرض</button></td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════
+
+function doLogin() {
+  const input = document.getElementById('login-pw').value;
+  const correct = localStorage.getItem('cp_admin_pw') || 'admin123';
+  if (input === correct) {
+    localStorage.setItem('cp_logged_in', 'true');
+    document.getElementById('login-err').innerText = '';
+    // Use the actual first sidebar button (Dashboard) to navigate properly
+    goPage('dashboard', document.querySelectorAll('.nav')[0]); 
+  } else {
+    document.getElementById('login-err').innerText = 'كلمة المرور غير صحيحة!';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('cp_logged_in');
+  location.reload();
+}
+
+function checkAdmin(){
+  const pw=document.getElementById('admin-pw').value;
+  if(pw===S.adminPw){
+    S.isAdmin=true;
+    document.getElementById('admin-gate-view').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    document.getElementById('admin-badge').style.display='flex';
+    renderAdmin();
+  } else { document.getElementById('admin-err').textContent='كلمة مرور غير صحيحة'; }
+}
+function renderAdmin(){
+  if(!S.isAdmin){ document.getElementById('admin-gate-view').style.display='block';document.getElementById('admin-panel').style.display='none';return; }
+  const db=getDrugDB();const ha=getHighAlertDB();const pts=S.patients;
+  document.getElementById('adm-stat-drugs').textContent=db.length+' دواء';
+  document.getElementById('adm-stat-ha').textContent=ha.length+' دواء مُفشِّل';
+  document.getElementById('adm-stat-pts').textContent=pts.length+' مريض';
+  renderAdminDrugList();renderAdminHAList();
+}
+function renderAdminDrugList(){
+  const q=(document.getElementById('adm-drug-search')?.value||'').toLowerCase();
+  const db=getDrugDB().filter(d=>!q||d.name.toLowerCase().includes(q));
+  const el=document.getElementById('adm-drug-list');
+  el.innerHTML=db.map(d=>`
+    <div class="admin-card" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div class="admin-card-title">${d.name}</div>
+        <div class="admin-card-sub">${d.category} — ⏰ ${d.optimalTime||'—'}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-gold btn-xs" onclick="editDrug('${d.id}')">تعديل</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteDrugDB('${d.id}')">حذف</button>
+      </div>
+    </div>`).join('');
+}
+function renderAdminHAList(){
+  const ha=getHighAlertDB();
+  const el=document.getElementById('adm-ha-list');
+  el.innerHTML=ha.map(d=>`
+    <div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;border-right:3px solid ${d.severity==='critical'?'#cc0000':d.severity==='high'?'#e07000':'#1a5cb0'}">
+      <div>
+        <div class="admin-card-title">${d.drug}</div>
+        <div class="admin-card-sub">${d.severity==='critical'?'خطير جداً':d.severity==='high'?'خطير':'متوسط'}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-warn btn-xs" onclick="editHA('${d.id}')">تعديل</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteHA('${d.id}')">حذف</button>
+      </div>
+    </div>`).join('');
+}
+function openAddDrugModal(){ if(!S.isAdmin){alert('يلزم تسجيل دخول الأدمن أولاً');return;} document.getElementById('edit-drug-id').value=''; document.getElementById('mo-drug-title').textContent='إضافة دواء جديد'; ['nd-name','nd-category','nd-dose','nd-freq','nd-timing','nd-food','nd-route','nd-halflife','nd-se','nd-contra','nd-int','nd-renal','nd-mech','nd-notes','nd-bb','nd-cat2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';}); openModal('mo-add-drug'); }
+function editDrug(id){
+  if(!S.isAdmin){alert('يلزم تسجيل دخول الأدمن أولاً');return;}
+  const d=getDrugDB().find(x=>x.id===id);if(!d)return;
+  document.getElementById('edit-drug-id').value=id;
+  document.getElementById('mo-drug-title').textContent='تعديل: '+d.name;
+  document.getElementById('nd-name').value=d.name||'';
+  document.getElementById('nd-category').value=d.category||'';
+  document.getElementById('nd-dose').value=d.dose||'';
+  document.getElementById('nd-freq').value=d.freq||'';
+  document.getElementById('nd-timing').value=d.timing||'';
+  document.getElementById('nd-food').value=d.food||'';
+  document.getElementById('nd-route').value=d.route||'';
+  document.getElementById('nd-halflife').value=d.halfLife||'';
+  document.getElementById('nd-se').value=d.sideEffects||'';
+  document.getElementById('nd-contra').value=d.contraindications||'';
+  document.getElementById('nd-int').value=d.interactions||'';
+  document.getElementById('nd-renal').value=d.renalAdj||'';
+  document.getElementById('nd-mech').value=d.mechanism||'';
+  document.getElementById('nd-notes').value=d.notes||'';
+  document.getElementById('nd-bb').value=d.blackBox||'';
+  document.getElementById('nd-cat2').value=d.category2||'';
+  document.getElementById('nd-optimal').value=d.optimalTime||'صباحاً';
+  openModal('mo-add-drug');
+}
+function saveDrugEntry(){
+  const name=document.getElementById('nd-name').value.trim();
+  if(!name){alert('اسم الدواء مطلوب');return;}
+  const db=getDrugDB();
+  const editId=document.getElementById('edit-drug-id').value;
+  const entry={
+    id:editId||('d'+Date.now()),name,
+    category:document.getElementById('nd-category').value,
+    dose:document.getElementById('nd-dose').value,
+    freq:document.getElementById('nd-freq').value,
+    timing:document.getElementById('nd-timing').value,
+    food:document.getElementById('nd-food').value,
+    route:document.getElementById('nd-route').value,
+    halfLife:document.getElementById('nd-halflife').value,
+    sideEffects:document.getElementById('nd-se').value,
+    contraindications:document.getElementById('nd-contra').value,
+    interactions:document.getElementById('nd-int').value,
+    renalAdj:document.getElementById('nd-renal').value,
+    mechanism:document.getElementById('nd-mech').value,
+    notes:document.getElementById('nd-notes').value,
+    blackBox:document.getElementById('nd-bb').value,
+    category2:document.getElementById('nd-cat2').value,
+    optimalTime:document.getElementById('nd-optimal').value,
+  };
+  if(editId){ const idx=db.findIndex(d=>d.id===editId); if(idx>=0)db[idx]=entry; }
+  else db.push(entry);
+  saveDrugDB(db);
+  closeModal('mo-add-drug');renderDrugDB();renderAdminDrugList();renderDashboard();
+}
+function deleteDrugDB(id){
+  if(!confirm('حذف هذا الدواء من قاعدة البيانات؟'))return;
+  saveDrugDB(getDrugDB().filter(d=>d.id!==id));renderDrugDB();renderAdminDrugList();renderDashboard();
+}
+function openAddHAModal(){ if(!S.isAdmin){alert('يلزم تسجيل دخول الأدمن أولاً');return;} document.getElementById('edit-ha-id').value=''; document.getElementById('mo-ha-title').textContent='إضافة دواء مُفشِّل'; ['ha-drug','ha-risk','ha-action'].forEach(i=>document.getElementById(i).value=''); openModal('mo-add-ha'); }
+function editHA(id){
+  if(!S.isAdmin)return;
+  const d=getHighAlertDB().find(x=>x.id===id);if(!d)return;
+  document.getElementById('edit-ha-id').value=id;
+  document.getElementById('mo-ha-title').textContent='تعديل: '+d.drug;
+  document.getElementById('ha-drug').value=d.drug;
+  document.getElementById('ha-sev').value=d.severity;
+  document.getElementById('ha-risk').value=d.risk;
+  document.getElementById('ha-action').value=d.action;
+  openModal('mo-add-ha');
+}
+function saveHAEntry(){
+  const drug=document.getElementById('ha-drug').value.trim();
+  if(!drug){alert('اسم الدواء مطلوب');return;}
+  const db=getHighAlertDB();
+  const editId=document.getElementById('edit-ha-id').value;
+  const entry={id:editId||('ha'+Date.now()),drug,severity:document.getElementById('ha-sev').value,
+    risk:document.getElementById('ha-risk').value,action:document.getElementById('ha-action').value};
+  if(editId){const idx=db.findIndex(d=>d.id===editId);if(idx>=0)db[idx]=entry;}
+  else db.push(entry);
+  saveHighAlertDB(db);closeModal('mo-add-ha');renderHighAlert();renderAdmin();renderDashboard();
+}
+function deleteHA(id){
+  if(!confirm('حذف هذا التنبيه؟'))return;
+  saveHighAlertDB(getHighAlertDB().filter(d=>d.id!==id));renderHighAlert();renderAdmin();renderDashboard();
+}
+function changeAdminPw(){
+  const pw=document.getElementById('new-pw').value;
+  if(pw.length<4){alert('كلمة المرور قصيرة جداً');return;}
+  localStorage.setItem('cp_admin_pw',pw);alert('تم تغيير كلمة المرور بنجاح ✓');
+  document.getElementById('new-pw').value='';
+}
+function exportData(){
+  const data={drugs:getDrugDB(),highAlert:getHighAlertDB(),patients:S.patients,meds:S.meds,notes:S.notes};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pharma_data_'+Date.now()+'.json';a.click();
+}
+function resetDB(){
+  if(!confirm('هل تريد إعادة تعيين قاعدة بيانات الأدوية / Drug DB للافتراضي؟ لن يؤثر على بيانات المرضى / Patients.'))return;
+  localStorage.removeItem('cp_drug_db');localStorage.removeItem('cp_high_alert_db');
+  alert('تم إعادة تعيين قاعدة البيانات ✓');renderAdmin();renderDrugDB();renderHighAlert();renderDashboard();
+}
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function switchTab(page,tab){
+  document.querySelectorAll(`#page-${page} .tab-panel`).forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll(`#page-${page} .tab`).forEach(t=>t.classList.remove('active'));
+  document.getElementById(`${page}-${tab}`)?.classList.add('active');
+  event?.currentTarget?.classList.add('active');
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  if(S.isAdmin){
+    document.getElementById('admin-badge').style.display='flex';
+    document.getElementById('db-edit-btn').style.display='block';
+    document.getElementById('ha-edit-btn').style.display='block';
+  }
+  renderDashboard();renderRenalTable();renderIntDB();
+});
+</script>
+</body>
+</html>
